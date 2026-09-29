@@ -12,7 +12,7 @@
   "keywords": ["mcp", "model-context-protocol", "claude", "cursor", "windsurf", "copilot", "agent-memory"],
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "npm run build && node --test \"dist/test/*.test.js\"",
+    "test": "npm run build && node run-tests.mjs",
     "prepublishOnly": "npm test"
   },
   "publishConfig": { "access": "public", "provenance": true },
