@@ -10,7 +10,7 @@ a few days. Please give us reasonable time to fix before disclosing.
 
 ## Scope
 
-- This CLI (`@memorify/cli`): pairing flow, config writing, the stdio bridge.
+- This CLI (`@hlsitech/memorify`): pairing flow, config writing, the stdio bridge.
 - The hosted service at memorify.dev is out of scope for this repository's issue tracker — report it privately
   through the same channel and we will route it.
 

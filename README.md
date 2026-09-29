@@ -1,15 +1,15 @@
-# @memorify/cli
+# @hlsitech/memorify
 
 Pair AI coding clients (Claude Code, Cursor, Windsurf, VS Code, Codex, Gemini CLI, …) with a
 [Memorify](https://memorify.dev) MCP gateway using a **device-code flow**: you approve the agent in your
 browser, so no secret is ever typed or pasted into a chat.
 
 ```bash
-npx @memorify/cli pair
+npx @hlsitech/memorify pair
 ```
 
 > The package name matters. The unscoped `memorify` package on npm belongs to an unrelated third party —
-> always use `@memorify/cli`.
+> always use `@hlsitech/memorify`.
 
 ## What it does
 

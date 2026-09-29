@@ -1,5 +1,5 @@
 {
-  "name": "@memorify/cli",
+  "name": "@hlsitech/memorify",
   "version": "0.2.0",
   "description": "Pair AI coding clients with Memorify (MCP gateway) — device-flow pairing, no secrets pasted into chats",
   "license": "MIT",
