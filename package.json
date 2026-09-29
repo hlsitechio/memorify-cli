@@ -1,0 +1,20 @@
+{
+  "name": "@memorify/cli",
+  "version": "0.2.0",
+  "description": "Pair AI coding clients with Memorify (MCP gateway) — device-flow pairing, no secrets pasted into chats",
+  "license": "MIT",
+  "type": "module",
+  "bin": { "memorify": "dist/index.js" },
+  "files": ["dist", "!dist/test", "README.md", "LICENSE"],
+  "engines": { "node": ">=18" },
+  "repository": { "type": "git", "url": "git+https://github.com/hlsitechio/memorify-cli.git" },
+  "homepage": "https://memorify.dev",
+  "keywords": ["mcp", "model-context-protocol", "claude", "cursor", "windsurf", "copilot", "agent-memory"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "npm run build && node --test \"dist/test/*.test.js\"",
+    "prepublishOnly": "npm test"
+  },
+  "publishConfig": { "access": "public", "provenance": true },
+  "devDependencies": { "@types/node": "^22.0.0", "typescript": "^5.6.0" }
+}

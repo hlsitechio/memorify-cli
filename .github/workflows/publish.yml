@@ -1,0 +1,24 @@
+name: publish
+# Publishes to npm WITH provenance when a version tag is pushed (e.g. v0.2.0).
+# Uses npm trusted publishing (OIDC) — configure it once on npmjs.com for this repo/workflow.
+# No long-lived npm token is stored in GitHub.
+on:
+  push:
+    tags: ["v*"]
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - run: npm ci
+      - name: tag must match package.json version
+        run: test "v$(node -p "require('./package.json').version")" = "${GITHUB_REF_NAME}"
+      - run: npm test
+      - run: npm publish --provenance --access public
