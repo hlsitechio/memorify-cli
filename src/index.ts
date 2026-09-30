@@ -8,7 +8,7 @@
 //   memorify whoami                  verify a stored/printed token
 
 import { spawn } from "node:child_process";
-import { startPairing, pollUntilApproved, cancelPairing, PairingDenied } from "./pair.js";
+import { startPairing, pollUntilApproved, cancelPairing, PairingDenied, PairingRateLimited, formatWait } from "./pair.js";
 import { CLIENTS, getClient, saveCredentials, loadToken, guardProjectSecret, type ClientTarget } from "./clients.js";
 import { runBridge } from "./bridge.js";
 import { assertSecureUrl, browserCommand, resolveHost } from "./safety.js";
@@ -84,7 +84,20 @@ async function cmdPair(args: Args): Promise<void> {
   }
 
   log(`\nRequesting pairing code from ${host}…`);
-  const start = await startPairing(host, name, "cli");
+  const loginHint = typeof args.email === "string" ? args.email : process.env.MEMORIFY_EMAIL;
+  let start;
+  for (let attempt = 0; ; attempt++) {
+    try {
+      start = await startPairing(host, name, "cli", undefined, loginHint);
+      break;
+    } catch (e) {
+      if (!(e instanceof PairingRateLimited)) throw e;
+      log(`\n[WAIT] ${e.message}`);
+      // --wait: keep the terminal open and retry automatically once the pause is over (at most twice).
+      if (args.wait !== true || attempt >= 2) process.exit(2);
+      await countdown(e.retryAfterSeconds);
+    }
+  }
   log("");
   log("  +-----------------------------------------+");
   log(`  |  Your code:  ${start.user_code.padEnd(28)}|`);
@@ -165,6 +178,19 @@ function cmdClients(): void {
   }
 }
 
+/** Live countdown on a terminal, one line per 30 s when not interactive. */
+async function countdown(seconds: number): Promise<void> {
+  const end = Date.now() + seconds * 1000;
+  const tty = Boolean(process.stdout.isTTY);
+  while (Date.now() < end) {
+    const left = Math.ceil((end - Date.now()) / 1000);
+    if (tty) process.stdout.write(`\r  retrying in ${formatWait(left)}…      `);
+    else if (left % 30 === 0) log(`  retrying in ${formatWait(left)}…`);
+    await new Promise((r) => setTimeout(r, 1000));
+  }
+  if (tty) process.stdout.write("\r" + " ".repeat(40) + "\r");
+}
+
 async function main(): Promise<void> {
   const args = parseArgs(process.argv.slice(2));
   const cmd = args._[0];
@@ -176,8 +202,10 @@ async function main(): Promise<void> {
     else {
       log(`memorify — universal MCP onboarding (v${VERSION})`);
       log("");
-      log("  memorify pair [--client <id|id,id>] [--print] [--name <n>] [--no-open]");
+      log("  memorify pair [--client <id|id,id>] [--print] [--name <n>] [--no-open] [--email <you@x.com>] [--wait]");
       log("      Run the device-flow pairing and write MCP config for detected clients.");
+      log("      --email  also email you about the request (or set MEMORIFY_EMAIL).");
+      log("      --wait   if pairing is paused for this computer, wait and retry automatically.");
       log("  memorify mcp [--url <u>]   (token from MEMORIFY_TOKEN or ~/.memorify/credentials.json)");
       log("      stdio<->HTTP bridge — lets stdio-only clients (Claude Desktop) connect.");
       log("  memorify whoami");

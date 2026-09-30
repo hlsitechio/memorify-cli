@@ -18,6 +18,14 @@ npx @hlsitech/memorify pair
 3. Writes the MCP server entry into each client's config (owner-only permissions, previous file backed up once
    as `<file>.memorify.bak`). An unparseable config is never overwritten.
 
+### Approving, waiting and alerts
+
+- The approval page asks you to type the code shown in your terminal; nobody can approve a request without it.
+- `--email you@example.com` (or `MEMORIFY_EMAIL`) also lets Memorify email you about the request. You also see it under the bell icon in the dashboard.
+- Codes last 10 minutes. After repeated denied, expired or failed requests, Memorify pauses pairing for that computer with
+  growing waits (1 min, 5 min, 30 min, 1 h, 24 h). The CLI tells you how long; add `--wait` to have it wait and retry
+  automatically. Already-paired agents are never affected.
+
 Other commands: `memorify whoami`, `memorify clients`, `memorify mcp` (a stdio⇄HTTP bridge for stdio-only
 clients such as Claude Desktop).
 
